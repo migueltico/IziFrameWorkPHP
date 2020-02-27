@@ -1,12 +1,13 @@
-<?php namespace config;
+<?php
+
+namespace config;
 
 class route
 {
-
     /**
-     * Metodo GET:
-     * Se encarga de verificar si la url obtenida coinside con una url asignada
-     *
+     * *Metodo GET:
+     * *Se encarga de verificar si la url obtenida coinside con una url asignada
+     * 
      * @param String $ruta url a ejecutar
      * @param String $funcion a ejecutar
      * @param mixed array middlewares a ejecutar
@@ -14,32 +15,40 @@ class route
      */
     public static function get(String $ruta, String $funcion, array $middlewares = [])
     {
-        $result=false;
+        $result = false;
         $url = route::assingUrl($ruta);
-        if ($url['url'] == $url['ruta']) {
-            echo "<br>Ruta Bar: ".$ruta . '<br>****Ruta Get: ' . $url['ruta'] . '*****<br>';
-            if ($GLOBALS['middleware_active']) {
-                route::middleware_exc($GLOBALS['middleware_array']);
-            } 
-            if (!empty($middlewares)) {
-                $result=route::middleware_exc($middlewares);
-                echo "<br>Middleware 1<br>";
-                if($result){
-                    echo "True";
-                }else{
-                    echo "False";
-                    return;
-                }
 
+        $typeUrl = self::validate_type_url($url['ruta']);
+        if (!$typeUrl) {
+            //!verifico si la url del Get es igual a alguna Ruta Asignada.
+            if ($url['url'] == $url['ruta']) {
+                echo "<br>URL CHECKED<br>";
+                //TODO: HACER QUE EL RETURN DE LOS MIDDLEWARES DEVUELVAN DATOS EN UN ARRAY
+                if ($GLOBALS['middleware_active']) {
+                    $result = route::middleware_exc($GLOBALS['middleware_array']);
+                    if (!$result) return;
+                    echo "<br>Group Middleware 1<br>";
+                }
+                if (!empty($middlewares)) {
+                    $result = route::middleware_exc($middlewares);
+                    if (!$result) return;
+                    echo "<br>Simple Middleware 1<br>";
+                }
             }
-          
+        } else {
+            $hasVar = self::getVar($url['ruta'], $url['url']);
         }
     }
+    /**
+     * * Verifica si la Ruta tiene activo el Group, y valida los slash y remueve los que son innecesarios
+     * @param String $ruta La ruta asignada desde el framework
+     * @return void
+     */
     public static function assingUrl(String $ruta)
     {
         $ruta = ($GLOBALS['route_group_active'] === true ? rtrim($ruta = $GLOBALS['route_group'] . $ruta, '/') : (strlen($ruta) == 1 ? $ruta : rtrim($ruta, '/')));
         $url = $_SERVER['REQUEST_URI'];
-        $url = (strlen($url)>0?$url:rtrim($url, '/'));
+        $url = (strlen($url) > 0 ? $url : rtrim($url, '/'));
         return ['ruta' => $ruta, 'url' => $url];
     }
     public static function middleware_exc($Middlewares)
@@ -54,9 +63,8 @@ class route
             /**Mandamos a llamar a la funcion del middleware  y la cual retornara True o False y lo asignara a la variable return */
             $return = call_user_func(array($middle, $middle_string_function['function']));
             // var_dump($return);
-            if (!$return) {
-                return false;
-            }
+
+            return  $return;
         }
     }
 
@@ -85,7 +93,6 @@ class route
     }
     public static function extractMiddleware()
     {
-
     }
 
     /**
@@ -106,7 +113,6 @@ class route
         $funtion();
         $GLOBALS['route_group'] = '';
         $GLOBALS['route_group_active'] = false;
-      
     }
     private static function get_function($function)
     {
@@ -117,5 +123,39 @@ class route
         );
         return $result;
     }
+    public function validate_type_url(String $url)
+    {
+        preg_match('/\\/:/', $url, $elementVar);
+        if (count($elementVar) > 0) {
+            // print_r($elementVar);
+            // echo "<br>-->" . $url . "<br>";
+            return array("isVar" => true);
+        }
+    }
+    public function getVar(String $ruta, String $url)
+    {
+        
+        $url = ltrim($url, "/");
+        $url = rtrim($url, "/");
+        $ruta = ltrim($ruta, "/");
+        $ruta = rtrim($ruta, "/");
+        $ArrayUrl = explode("/", $url);
+        $ArrayRuta = explode("/", $ruta);
+        if (count($ArrayUrl) == count($ArrayRuta)) {
+            echo "<br>-----*******------------******-------<br>";
+            echo "<br>-->Var-->methodGetUrl: " . $url . "<br>";
+            echo "<br>-->Var-->methodGetRuta: " . $ruta . "<br>";
 
+
+            echo "<pre>";
+            print_r($ArrayUrl);
+            echo "</br></br>";
+            print_r($ArrayRuta);
+            
+            echo "</br></br>";
+            print_r(array_diff($ArrayRuta,$ArrayUrl));
+        
+            echo "</pre>";
+        }
+    }
 }
