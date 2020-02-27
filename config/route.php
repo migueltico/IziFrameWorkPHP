@@ -18,31 +18,38 @@ class route
         $result = false;
         $url = route::assingUrl($ruta);
         $typeUrl = self::validate_type_url($url['ruta']);
+        //*Validar si la Url es del tipo Get sin parametros
         if (!$typeUrl) {
             //!verifico si la url del Get es igual a alguna Ruta Asignada.
             if ($url['url'] == $url['ruta']) {
-                echo "<br>URL CHECKED<br>";
                 //TODO: HACER QUE EL RETURN DE LOS MIDDLEWARES DEVUELVAN DATOS EN UN ARRAY
+                //*Verifica si la url se encuntra dentro de un grupo de middleware
                 if ($GLOBALS['middleware_active']) {
                     $result = route::middleware_exc($GLOBALS['middleware_array']);
                     if (!$result) return;
                     $GLOBALS["error404"] = true;
                 }
+                //*Verifica si cada Ruta tiene Middlewares individuales
                 if (!empty($middlewares)) {
                     $result = route::middleware_exc($middlewares);
                     if (!$result) return;
                     $GLOBALS["error404"] = true;
                 }
+                //*Valida que no hubo error y continua con el proceso
                 $GLOBALS["error404"] = true;
             }
         } else {
+            //*Verifica que la Ruta coinciada con la URL y obtiene sus parametros
             $hasVar = self::getVar($url['ruta'], $url['url']);
+            //*Si la Url es del tipo que contiene parametros continua dentro del IF
             if ($hasVar["isRoute"]) {
                 //TODO: HACER QUE EL RETURN DE LOS MIDDLEWARES DEVUELVAN DATOS EN UN ARRAY
+                //*Verifica si la url se encuntra dentro de un grupo de middleware
                 if ($GLOBALS['middleware_active']) {
                     $result = route::middleware_exc($GLOBALS['middleware_array']);
                     if (!$result) return;
                 }
+                //*Verifica si cada Ruta tiene Middlewares individuales
                 if (!empty($middlewares)) {
                     $result = route::middleware_exc($middlewares);      
                     if (!$result) return;
