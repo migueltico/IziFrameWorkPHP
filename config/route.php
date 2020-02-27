@@ -4,6 +4,44 @@ namespace config;
 
 class route
 {
+        /**
+     * *Metodo Post:
+     * *Se encarga de verificar si la url obtenida coinside con una url asignada
+     * 
+     * @param String $ruta url a ejecutar
+     * @param String $funcion a ejecutar
+     * @param mixed array middlewares a ejecutar
+     * @return void
+     */
+    public function post(String $ruta, String $funcion, array $middlewares = [])
+    {
+        $result = false;
+        $url = route::assingUrl($ruta);
+            //!verifico si la url del Get es igual a alguna Ruta Asignada.
+            if ($url['url'] == $url['ruta']) {
+                header('Content-Type: application/json');
+                http_response_code(400);
+                //TODO: HACER QUE EL RETURN DE LOS MIDDLEWARES DEVUELVAN DATOS EN UN ARRAY
+                //*Verifica si la url se encuntra dentro de un grupo de middleware
+                if ($GLOBALS['middleware_active']) {
+                    $result = route::middleware_exc($GLOBALS['middleware_array']);
+                    if (!$result) return;
+                    $GLOBALS["error404"] = true;
+                    echo json_encode(array("Some"=>"Middleware","persona"=>array("Nombre"=>"Miguel","apellido"=>"Esquivel")));
+                }
+                //*Verifica si cada Ruta tiene Middlewares individuales
+                if (!empty($middlewares)) {
+                    $result = route::middleware_exc($middlewares);
+                    if (!$result) return;
+                    $GLOBALS["error404"] = true;
+                    echo json_encode(array("One"=>"Middleware","persona"=>array("Nombre"=>"Miguel","apellido"=>"Esquivel")));
+                }
+                //*Valida que no hubo error y continua con el proceso
+                $GLOBALS["error404"] = true;
+                echo json_encode(array("saludo"=>"hola","persona"=>array("Nombre"=>"Miguel","apellido"=>"Esquivel")));
+            }
+       
+    }
     /**
      * *Metodo GET:
      * *Se encarga de verificar si la url obtenida coinside con una url asignada

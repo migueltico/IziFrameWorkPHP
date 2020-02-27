@@ -6,10 +6,10 @@ class login
     {
         $a = true;
         if ($a == true) {
-            echo '<br>validate_login#1 <br>';
+           //echo '<br>validate_login#1 <br>';
             return true;
         } else {
-            echo '<br>NO validate_login #1 <br>';
+            //echo '<br>NO validate_login #1 <br>';
             return false;
         }
     }
@@ -18,10 +18,10 @@ class login
         $a = true;
         if ($a == true) {
 
-            echo '<br>TOKEN LOGIN NUMERO #2 <br>';
+            //echo '<br>TOKEN LOGIN NUMERO #2 <br>';
             return true;
         } else {
-            echo '<br>NO TIENE ACCESO A TOKEN LOGIN #2 <br>';
+            //echo '<br>NO TIENE ACCESO A TOKEN LOGIN #2 <br>';
             return false;
         }
     }
@@ -30,10 +30,10 @@ class login
         $a = true;
         if ($a == true) {
 
-            echo '<br>AUTH LOGIN NUMERO #3 <br>';
+            //echo '<br>AUTH LOGIN NUMERO #3 <br>';
             return false;
         } else {
-            echo '<br>NO TIENE ACCESO A AUTH #3 <br>';
+            //echo '<br>NO TIENE ACCESO A AUTH #3 <br>';
             return false;
         }
     }
@@ -42,10 +42,10 @@ class login
         $a = true;
         if ($a == true) {
 
-            echo '<br>prueba <br>';
+            //echo '<br>prueba <br>';
             return true;
         } else {
-            echo '<br>NO TIENE ACCESO A prueba<br>';
+            //echo '<br>NO TIENE ACCESO A prueba<br>';
             return false;
         }
     }
