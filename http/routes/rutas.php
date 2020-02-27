@@ -25,6 +25,8 @@ route::middleware(['login@validate_login', 'login@token'], function () {
     route::get('/home', 'indexController@b', ['login@prueba','login@prueba']);
 });
 route::get('/tienda/producto/:idproduct/categoria/:cat_id/user/:userid', 'indexController@index');
+route::get('/tienda/producto5/:idproduct/categoria/:cat_id/user/:userid', 'indexController@index');
+route::get('/tienda/producto/:idproduct/categoria/:cat_id/user/prueba/', 'indexController@index');
 route::get('/contact/custom', 'indexController@index');
 route::get('/blog/buscar/id', 'indexController@index');
 route::get('/tienda/producto4/:idproduct/categoria/:cat_id', 'indexController@index');

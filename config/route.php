@@ -127,14 +127,20 @@ class route
     {
         preg_match('/\\/:/', $url, $elementVar);
         if (count($elementVar) > 0) {
-            // print_r($elementVar);
+            //print_r($elementVar);
             // echo "<br>-->" . $url . "<br>";
             return array("isVar" => true);
         }
     }
+    public function diffArr($a, $b)
+    {
+
+        return "<p>a" . $a . "" . $b . "</p>";
+    }
     public function getVar(String $ruta, String $url)
     {
-        
+       
+
         $url = ltrim($url, "/");
         $url = rtrim($url, "/");
         $ruta = ltrim($ruta, "/");
@@ -142,20 +148,39 @@ class route
         $ArrayUrl = explode("/", $url);
         $ArrayRuta = explode("/", $ruta);
         if (count($ArrayUrl) == count($ArrayRuta)) {
-            echo "<br>-----*******------------******-------<br>";
-            echo "<br>-->Var-->methodGetUrl: " . $url . "<br>";
-            echo "<br>-->Var-->methodGetRuta: " . $ruta . "<br>";
+            $arrayElements = [];
+            $arrayDataVars = [];
+            $arrayVars = [];
 
-
+          
             echo "<pre>";
-            print_r($ArrayUrl);
-            echo "</br></br>";
-            print_r($ArrayRuta);
-            
-            echo "</br></br>";
-            print_r(array_diff($ArrayRuta,$ArrayUrl));
-        
+            foreach ($ArrayRuta as $key => $value) {
+
+                preg_match('/:/', $value, $isVar);
+                if ($ArrayUrl[$key] == $value) {
+                    array_push($arrayElements, $value);
+                } elseif (count($isVar) > 0) {                
+                    array_push($arrayDataVars, $ArrayUrl[$key]);
+                    array_push($arrayVars, $value);
+                } else {
+                    
+                    echo "<br>-----XXX----<strong style='color:red;'>SIN COINCIDENCIA</strong>----XXX>-----br>";
+                    echo "<br><strong>URL WEB</strong>: /" . $url . "<br>";
+                    echo "<br><strong>RUTA::GET</strong>: /" . $ruta . "<br>";
+                    $arrayElements = "";
+                    $arrayDataVars = "";
+                    return;
+                }
+            }
+         
+            echo "<br>>-----*******-----<strong style='color:blue;'>COINCIDENCIA</strong>-----******->-----<br>";
+            echo "<br><strong>URL WEB</strong>: /" . $url . "<br>";
+            echo "<br><strong>RUTA::GET</strong>: /" . $ruta . "<br>";
+            print_r($arrayElements);
+            print_r($arrayDataVars);
+            print_r($arrayVars);
             echo "</pre>";
+
         }
     }
 }
