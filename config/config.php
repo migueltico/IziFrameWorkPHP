@@ -1,4 +1,6 @@
-<?php namespace Config;
+<?php
+
+namespace Config;
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', realpath(dirname(__FILE__)) . DS);
@@ -12,3 +14,17 @@ $route_group = '';
 $route_group_active = false;
 $middleware_array = [];
 $middleware_active = false;
+$error404 = false;
+class Config  
+{
+    
+   public function err()
+    {
+        if (!$GLOBALS["error404"]) {
+            echo "<h1>ERROR404</h1>";
+        }else{
+            $GLOBALS["error404"]=false;
+        }
+    }
+}
+

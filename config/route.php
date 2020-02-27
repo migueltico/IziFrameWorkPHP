@@ -17,7 +17,6 @@ class route
     {
         $result = false;
         $url = route::assingUrl($ruta);
-
         $typeUrl = self::validate_type_url($url['ruta']);
         if (!$typeUrl) {
             //!verifico si la url del Get es igual a alguna Ruta Asignada.
@@ -27,16 +26,32 @@ class route
                 if ($GLOBALS['middleware_active']) {
                     $result = route::middleware_exc($GLOBALS['middleware_array']);
                     if (!$result) return;
-                    echo "<br>Group Middleware 1<br>";
+                    $GLOBALS["error404"] = true;
                 }
                 if (!empty($middlewares)) {
                     $result = route::middleware_exc($middlewares);
                     if (!$result) return;
-                    echo "<br>Simple Middleware 1<br>";
+                    $GLOBALS["error404"] = true;
                 }
+                $GLOBALS["error404"] = true;
             }
         } else {
             $hasVar = self::getVar($url['ruta'], $url['url']);
+            if ($hasVar["isRoute"]) {
+                //TODO: HACER QUE EL RETURN DE LOS MIDDLEWARES DEVUELVAN DATOS EN UN ARRAY
+                if ($GLOBALS['middleware_active']) {
+                    $result = route::middleware_exc($GLOBALS['middleware_array']);
+                    if (!$result) return;
+                }
+                if (!empty($middlewares)) {
+                    $result = route::middleware_exc($middlewares);      
+                    if (!$result) return;
+                }
+                $GLOBALS["error404"] = true;
+                return;
+            } else {
+                return;
+            }
         }
     }
     /**
@@ -53,6 +68,7 @@ class route
     }
     public static function middleware_exc($Middlewares)
     {
+        $return=false; 
         foreach ($Middlewares as $Middleware) {
             /**Obtener los middlewares y su controlador en array y lo asignamos a una variable */
             $middle_string_function = route::get_function($Middleware);
@@ -64,8 +80,8 @@ class route
             $return = call_user_func(array($middle, $middle_string_function['function']));
             // var_dump($return);
 
-            return  $return;
         }
+        return  $return;
     }
 
     /**
@@ -91,10 +107,6 @@ class route
         $GLOBALS['middleware_active'] = false;
         $GLOBALS['middleware_array'] = [];
     }
-    public static function extractMiddleware()
-    {
-    }
-
     /**
      * Metodo Group:
      *Se encarga de agrupar rutas y  agregarle un prefix de url para funcionar en un ambito especifico,
@@ -132,15 +144,8 @@ class route
             return array("isVar" => true);
         }
     }
-    public function diffArr($a, $b)
-    {
-
-        return "<p>a" . $a . "" . $b . "</p>";
-    }
     public function getVar(String $ruta, String $url)
     {
-       
-
         $url = ltrim($url, "/");
         $url = rtrim($url, "/");
         $ruta = ltrim($ruta, "/");
@@ -148,39 +153,27 @@ class route
         $ArrayUrl = explode("/", $url);
         $ArrayRuta = explode("/", $ruta);
         if (count($ArrayUrl) == count($ArrayRuta)) {
-            $arrayElements = [];
-            $arrayDataVars = [];
-            $arrayVars = [];
-
-          
-            echo "<pre>";
+            $ArrayElements = [];
+            $ArrayDataVars = [];
+            $ArrayVars = [];
+            $ArrayVarAssoc = [];
             foreach ($ArrayRuta as $key => $value) {
-
                 preg_match('/:/', $value, $isVar);
                 if ($ArrayUrl[$key] == $value) {
-                    array_push($arrayElements, $value);
-                } elseif (count($isVar) > 0) {                
-                    array_push($arrayDataVars, $ArrayUrl[$key]);
-                    array_push($arrayVars, $value);
+                    array_push($ArrayElements, $value);
+                } elseif (count($isVar) > 0) {
+                    array_push($ArrayDataVars, $ArrayUrl[$key]);
+                    array_push($ArrayVars, $value);
                 } else {
-                    
-                    echo "<br>-----XXX----<strong style='color:red;'>SIN COINCIDENCIA</strong>----XXX>-----br>";
-                    echo "<br><strong>URL WEB</strong>: /" . $url . "<br>";
-                    echo "<br><strong>RUTA::GET</strong>: /" . $ruta . "<br>";
-                    $arrayElements = "";
-                    $arrayDataVars = "";
-                    return;
+                    return array("isRoute" => false);
+                    $ArrayElements = "";
+                    $ArrayDataVars = "";
                 }
             }
-         
-            echo "<br>>-----*******-----<strong style='color:blue;'>COINCIDENCIA</strong>-----******->-----<br>";
-            echo "<br><strong>URL WEB</strong>: /" . $url . "<br>";
-            echo "<br><strong>RUTA::GET</strong>: /" . $ruta . "<br>";
-            print_r($arrayElements);
-            print_r($arrayDataVars);
-            print_r($arrayVars);
-            echo "</pre>";
-
+            foreach ($ArrayVars as $key => $Var) {
+                $ArrayVarAssoc[preg_replace("/:/", "", $Var)] = $ArrayDataVars[$key];
+            }
+            return array("isRoute" => true, "vars" => $ArrayVarAssoc);
         }
     }
 }

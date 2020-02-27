@@ -19,7 +19,7 @@ class login
         if ($a == true) {
 
             echo '<br>TOKEN LOGIN NUMERO #2 <br>';
-            return false;
+            return true;
         } else {
             echo '<br>NO TIENE ACCESO A TOKEN LOGIN #2 <br>';
             return false;
@@ -43,7 +43,7 @@ class login
         if ($a == true) {
 
             echo '<br>prueba <br>';
-            return false;
+            return true;
         } else {
             echo '<br>NO TIENE ACCESO A prueba<br>';
             return false;
