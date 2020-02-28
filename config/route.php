@@ -28,14 +28,14 @@ class route
      * @param mixed array middlewares a ejecutar
      * @return void
      */
-    public function get(String $ruta, String $funcion, array $middlewares = [])
+    public static function get(String $ruta, String $funcion, array $middlewares = [])
     {
         if ($_SERVER['REQUEST_METHOD'] == "GET") {
             self::excRoute($ruta, $funcion, $middlewares);
         }
     }
 
-    public function excRoute(String $ruta, String $funcion, array $middlewares = [])
+    public static function excRoute(String $ruta, String $funcion, array $middlewares = [])
     {
 
         $result = false;
@@ -98,7 +98,7 @@ class route
     }
     public static function middleware_exc($Middlewares, $var = [])
     {
-        $method =  array("body" => $var, "post" => $_POST, "get" => $_GET);
+        $method =  array("params" => $var, "post" => $_POST, "get" => $_GET);
         $return = false;
         foreach ($Middlewares as $Middleware) {
             /**Obtener los middlewares y su controlador en array y lo asignamos a una variable */
@@ -167,14 +167,14 @@ class route
         );
         return $result;
     }
-    public function validate_type_url(String $url)
+    public static function validate_type_url(String $url)
     {
         preg_match('/\\/:/', $url, $elementVar);
         if (count($elementVar) > 0) {
             return array("isVar" => true);
         }
     }
-    public function getVar(String $ruta, String $url)
+    public static function getVar(String $ruta, String $url)
     {
         $url = ltrim($url, "/");
         $url = rtrim($url, "/");

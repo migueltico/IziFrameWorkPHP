@@ -1,5 +1,5 @@
 <?php session_start();
-error_reporting(E_ERROR);
+error_reporting(E_ALL);
 require 'config/config.php';
 require_once 'config/autoload.php';
 Config\Autoload::on();
