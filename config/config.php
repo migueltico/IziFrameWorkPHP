@@ -26,5 +26,9 @@ class Config
             $GLOBALS["error404"]=false;
         }
     }
+   public function route()
+    {
+        require_once "http/routes/rutas.php";
+    }
 }
 

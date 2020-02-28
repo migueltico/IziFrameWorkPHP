@@ -37,12 +37,13 @@ class login
             return false;
         }
     }
-    public function prueba($request = '', $next = '')
+    public function prueba($res = '', $next = '')
     {
         $a = true;
         if ($a == true) {
+            print_r(json_encode($res));
 
-            //echo '<br>prueba <br>';
+           // print_r($res);
             return true;
         } else {
             //echo '<br>NO TIENE ACCESO A prueba<br>';

@@ -4,7 +4,7 @@ namespace config;
 
 class route
 {
-        /**
+    /**
      * *Metodo Post:
      * *Se encarga de verificar si la url obtenida coinside con una url asignada
      * 
@@ -13,34 +13,11 @@ class route
      * @param mixed array middlewares a ejecutar
      * @return void
      */
-    public function post(String $ruta, String $funcion, array $middlewares = [])
+    public static function post(String $ruta, String $funcion, array $middlewares = [])
     {
-        $result = false;
-        $url = route::assingUrl($ruta);
-            //!verifico si la url del Get es igual a alguna Ruta Asignada.
-            if ($url['url'] == $url['ruta']) {
-                header('Content-Type: application/json');
-                http_response_code(400);
-                //TODO: HACER QUE EL RETURN DE LOS MIDDLEWARES DEVUELVAN DATOS EN UN ARRAY
-                //*Verifica si la url se encuntra dentro de un grupo de middleware
-                if ($GLOBALS['middleware_active']) {
-                    $result = route::middleware_exc($GLOBALS['middleware_array']);
-                    if (!$result) return;
-                    $GLOBALS["error404"] = true;
-                    echo json_encode(array("Some"=>"Middleware","persona"=>array("Nombre"=>"Miguel","apellido"=>"Esquivel")));
-                }
-                //*Verifica si cada Ruta tiene Middlewares individuales
-                if (!empty($middlewares)) {
-                    $result = route::middleware_exc($middlewares);
-                    if (!$result) return;
-                    $GLOBALS["error404"] = true;
-                    echo json_encode(array("One"=>"Middleware","persona"=>array("Nombre"=>"Miguel","apellido"=>"Esquivel")));
-                }
-                //*Valida que no hubo error y continua con el proceso
-                $GLOBALS["error404"] = true;
-                echo json_encode(array("saludo"=>"hola","persona"=>array("Nombre"=>"Miguel","apellido"=>"Esquivel")));
-            }
-       
+        if ($_SERVER['REQUEST_METHOD'] == "POST") {
+            self::excRoute($ruta, $funcion, $middlewares);
+        }
     }
     /**
      * *Metodo GET:
@@ -51,8 +28,16 @@ class route
      * @param mixed array middlewares a ejecutar
      * @return void
      */
-    public static function get(String $ruta, String $funcion, array $middlewares = [])
+    public function get(String $ruta, String $funcion, array $middlewares = [])
     {
+        if ($_SERVER['REQUEST_METHOD'] == "GET") {
+            self::excRoute($ruta, $funcion, $middlewares);
+        }
+    }
+
+    public function excRoute(String $ruta, String $funcion, array $middlewares = [])
+    {
+
         $result = false;
         $url = route::assingUrl($ruta);
         $typeUrl = self::validate_type_url($url['ruta']);
@@ -84,12 +69,12 @@ class route
                 //TODO: HACER QUE EL RETURN DE LOS MIDDLEWARES DEVUELVAN DATOS EN UN ARRAY
                 //*Verifica si la url se encuntra dentro de un grupo de middleware
                 if ($GLOBALS['middleware_active']) {
-                    $result = route::middleware_exc($GLOBALS['middleware_array']);
+                    $result = route::middleware_exc($GLOBALS['middleware_array'], $hasVar["vars"]);
                     if (!$result) return;
                 }
                 //*Verifica si cada Ruta tiene Middlewares individuales
                 if (!empty($middlewares)) {
-                    $result = route::middleware_exc($middlewares);      
+                    $result = route::middleware_exc($middlewares, $hasVar["vars"]);
                     if (!$result) return;
                 }
                 $GLOBALS["error404"] = true;
@@ -106,14 +91,15 @@ class route
      */
     public static function assingUrl(String $ruta)
     {
-        $ruta = ($GLOBALS['route_group_active'] === true ? rtrim($ruta = $GLOBALS['route_group'] . $ruta, '/') : (strlen($ruta) == 1 ? $ruta : rtrim($ruta, '/')));
+        $ruta = ($GLOBALS['route_group_active'] === true ? rtrim($ruta = $GLOBALS['route_group'] . $ruta, '/') : (strlen($ruta) > 1 ? rtrim($ruta, '/') : $ruta));
         $url = $_SERVER['REQUEST_URI'];
-        $url = (strlen($url) > 0 ? $url : rtrim($url, '/'));
+        $url = (strlen($url) > 1 ?  rtrim($url, '/') : $url);
         return ['ruta' => $ruta, 'url' => $url];
     }
-    public static function middleware_exc($Middlewares)
+    public static function middleware_exc($Middlewares, $var = [])
     {
-        $return=false; 
+        $method =  array("body" => $var, "post" => $_POST, "get" => $_GET);
+        $return = false;
         foreach ($Middlewares as $Middleware) {
             /**Obtener los middlewares y su controlador en array y lo asignamos a una variable */
             $middle_string_function = route::get_function($Middleware);
@@ -122,7 +108,8 @@ class route
             /**Instanciamos un nuevo objeto con la ruta que creeamos anteriormente */
             $middle = new $middle_funtion;
             /**Mandamos a llamar a la funcion del middleware  y la cual retornara True o False y lo asignara a la variable return */
-            $return = call_user_func(array($middle, $middle_string_function['function']));
+            //print_r($_GET);
+            $return = call_user_func(array($middle, $middle_string_function['function']), $method);
             // var_dump($return);
 
         }
@@ -184,8 +171,6 @@ class route
     {
         preg_match('/\\/:/', $url, $elementVar);
         if (count($elementVar) > 0) {
-            //print_r($elementVar);
-            // echo "<br>-->" . $url . "<br>";
             return array("isVar" => true);
         }
     }
@@ -195,7 +180,8 @@ class route
         $url = rtrim($url, "/");
         $ruta = ltrim($ruta, "/");
         $ruta = rtrim($ruta, "/");
-        $ArrayUrl = explode("/", $url);
+        $url = explode("?", $url);
+        $ArrayUrl = explode("/", $url[0]);
         $ArrayRuta = explode("/", $ruta);
         if (count($ArrayUrl) == count($ArrayRuta)) {
             $ArrayElements = [];
