@@ -39,11 +39,11 @@ class login
     }
     public function prueba($res = '', $next = '')
     {
-        http_response_code(200);
-        header('Content-type: application/json');
+        //http_response_code(200);
+        //header('Content-type: application/json');
         $a = true;
         if ($a == true) {
-            print_r(json_encode($res));
+            //print_r(json_encode($res));
 
            // print_r($res);
             return true;

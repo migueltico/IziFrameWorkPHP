@@ -34,7 +34,19 @@ class route
             self::excRoute($ruta, $funcion, $middlewares);
         }
     }
-
+    public static function callMethod($func, $var)
+    {
+        /**Obtener los middlewares y su controlador en array y lo asignamos a una variable */
+        $stringArrayFunction = route::get_function($func);
+        /**concatenamos el string de la ruta del middleware y la variable con el controller para generar la ruta */
+        $stringFunction = "controllers\\" . $stringArrayFunction['controller'];
+        /**Instanciamos un nuevo objeto con la ruta que creeamos anteriormente */
+        $function = new $stringFunction;
+        /**Mandamos a llamar a la funcion del middleware  y la cual retornara True o False y lo asignara a la variable return */
+        //print_r($_GET);
+        $return = call_user_func(array($function, $stringArrayFunction['function']), $var);
+        // var_dump($return);
+    }
     public static function excRoute(String $ruta, String $funcion, array $middlewares = [])
     {
 
@@ -60,6 +72,7 @@ class route
                 }
                 //*Valida que no hubo error y continua con el proceso
                 $GLOBALS["error404"] = true;
+                self::callMethod($funcion, array("post" => $_POST, "get" => $_GET));
             }
         } else {
             //*Verifica que la Ruta coinciada con la URL y obtiene sus parametros
@@ -78,6 +91,8 @@ class route
                     if (!$result) return;
                 }
                 $GLOBALS["error404"] = true;
+                $var = array("params" => $hasVar["vars"], "post" => $_POST, "get" => $_GET);
+                self::callMethod($funcion, $var);
                 return;
             } else {
                 return;
