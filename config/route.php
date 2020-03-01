@@ -7,7 +7,7 @@ class route
     /**
      * *Metodo Post:
      * *Se encarga de verificar si la url obtenida coinside con una url asignada
-     * 
+     *
      * @param String $ruta url a ejecutar
      * @param String $funcion a ejecutar
      * @param mixed array middlewares a ejecutar
@@ -22,7 +22,7 @@ class route
     /**
      * *Metodo GET:
      * *Se encarga de verificar si la url obtenida coinside con una url asignada
-     * 
+     *
      * @param String $ruta url a ejecutar
      * @param String $funcion a ejecutar
      * @param mixed array middlewares a ejecutar
@@ -61,13 +61,19 @@ class route
                 //*Verifica si la url se encuntra dentro de un grupo de middleware
                 if ($GLOBALS['middleware_active']) {
                     $result = route::middleware_exc($GLOBALS['middleware_array']);
-                    if (!$result) return;
+                    if (!$result) {
+                        return;
+                    }
+
                     $GLOBALS["error404"] = true;
                 }
                 //*Verifica si cada Ruta tiene Middlewares individuales
                 if (!empty($middlewares)) {
                     $result = route::middleware_exc($middlewares);
-                    if (!$result) return;
+                    if (!$result) {
+                        return;
+                    }
+
                     $GLOBALS["error404"] = true;
                 }
                 //*Valida que no hubo error y continua con el proceso
@@ -83,12 +89,18 @@ class route
                 //*Verifica si la url se encuntra dentro de un grupo de middleware
                 if ($GLOBALS['middleware_active']) {
                     $result = route::middleware_exc($GLOBALS['middleware_array'], $hasVar["vars"]);
-                    if (!$result) return;
+                    if (!$result) {
+                        return;
+                    }
+
                 }
                 //*Verifica si cada Ruta tiene Middlewares individuales
                 if (!empty($middlewares)) {
                     $result = route::middleware_exc($middlewares, $hasVar["vars"]);
-                    if (!$result) return;
+                    if (!$result) {
+                        return;
+                    }
+
                 }
                 $GLOBALS["error404"] = true;
                 $var = array("params" => $hasVar["vars"], "post" => $_POST, "get" => $_GET);
@@ -108,12 +120,12 @@ class route
     {
         $ruta = ($GLOBALS['route_group_active'] === true ? rtrim($ruta = $GLOBALS['route_group'] . $ruta, '/') : (strlen($ruta) > 1 ? rtrim($ruta, '/') : $ruta));
         $url = $_SERVER['REQUEST_URI'];
-        $url = (strlen($url) > 1 ?  rtrim($url, '/') : $url);
+        $url = (strlen($url) > 1 ? rtrim($url, '/') : $url);
         return ['ruta' => $ruta, 'url' => $url];
     }
     public static function middleware_exc($Middlewares, $var = [])
     {
-        $method =  array("params" => $var, "post" => $_POST, "get" => $_GET);
+        $method = array("params" => $var, "post" => $_POST, "get" => $_GET);
         $return = false;
         foreach ($Middlewares as $Middleware) {
             /**Obtener los middlewares y su controlador en array y lo asignamos a una variable */
@@ -128,7 +140,7 @@ class route
             // var_dump($return);
 
         }
-        return  $return;
+        return $return;
     }
 
     /**
@@ -221,5 +233,6 @@ class route
             }
             return array("isRoute" => true, "vars" => $ArrayVarAssoc);
         }
+        return array("isRoute" => false, "vars" => []);
     }
 }
