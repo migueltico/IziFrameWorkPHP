@@ -82,7 +82,7 @@ class route
             }
         } else {
             //*Verifica que la Ruta coinciada con la URL y obtiene sus parametros
-            $hasVar = self::getVar($url['ruta'], $url['url']);
+            $hasVar = self::getParams($url['ruta'], $url['url']);
             //*Si la Url es del tipo que contiene parametros continua dentro del IF
             if ($hasVar["isRoute"]) {
                 //TODO: HACER QUE EL RETURN DE LOS MIDDLEWARES DEVUELVAN DATOS EN UN ARRAY
@@ -123,6 +123,14 @@ class route
         $url = (strlen($url) > 1 ? rtrim($url, '/') : $url);
         return ['ruta' => $ruta, 'url' => $url];
     }
+    /**
+     * Se encarga de ejecutar los Middlewares que se pasan como parametros
+     * y pasa a la funcion los parametros obtenidos por los metodos Get y post para su uso de ser necesarios
+     *
+     * @param [type] $Middlewares
+     * @param array $var
+     * @return void
+     */
     public static function middleware_exc($Middlewares, $var = [])
     {
         $method = array("params" => $var, "post" => $_POST, "get" => $_GET);
@@ -185,7 +193,13 @@ class route
         $GLOBALS['route_group'] = '';
         $GLOBALS['route_group_active'] = false;
     }
-    private static function get_function($function)
+    /**
+     * Se encarga de obtener el controlador y el metodo
+     *
+     * @param String $function
+     * @return void
+     */
+    private static function get_function(String $function)
     {
         $function = explode("@", $function);
         $result = array(
@@ -194,6 +208,12 @@ class route
         );
         return $result;
     }
+    /**
+     * Verifica si la Ruta analizada lleva Parametros
+     *
+     * @param String $url
+     * @return void
+     */
     public static function validate_type_url(String $url)
     {
         preg_match('/\\/:/', $url, $elementVar);
@@ -201,7 +221,16 @@ class route
             return array("isVar" => true);
         }
     }
-    public static function getVar(String $ruta, String $url)
+    /**
+     * Se obtiene los parametros en una Url verificando que la Ruta establecida luego de dividir por "/", compara
+     * cada item del arrray resultante yu verifica que sea la misma cantidad de elementos y que cada uno sea similar al otro item
+     * del otro array, y cuando no sean iguales este en la misma posicion done la ruta establece que irian parametros
+     *
+     * @param String $ruta
+     * @param String $url
+     * @return void
+     */
+    public static function getParams(String $ruta, String $url)
     {
         $url = ltrim($url, "/");
         $url = rtrim($url, "/");
