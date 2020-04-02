@@ -1,27 +1,23 @@
 <?php
 
 namespace controllers;
-
 // manda a llamar al controlador de vistas
-// use Config\view;
-
+ use Config\view;
 // manda a llamar al controlador de conexiones a bases de datos
 
-// la calse debe llamarse igual que el controlador respetando mayusculas
-class indexController//extends view
+// la clase debe llamarse igual que el controlador respetando mayusculas
+class indexController extends view
 
 {
-    public function a(...$var)
+    public function index(...$var)
     {
-        print_r($var);
+        $newArr = array($var,"Variable"=>"NewArr");
+        view::render("index2",$newArr);
     }
     public function b($var)
     {
-        //echo '<br>Index controler Metodo: B<br>';
-        // print_r($var["get"]);
-        //echo "<br>";
-        // http_response_code(200);
-        // header('Content-type: application/json');
-        echo json_encode($var);
+        $newArr = array($var,"Variable"=>"NewArr");
+        view::render("index",$newArr);
+        
     }
 }

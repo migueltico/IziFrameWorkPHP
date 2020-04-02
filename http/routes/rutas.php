@@ -18,7 +18,7 @@ route::group('admin', function () {
     });
 });
 route::middleware(['login@validate_login', 'login@token'], function () {
-    route::get('/', 'indexController@b', ['login@prueba', 'login@prueba']);
+    route::get('/', 'indexController@index', ['login@prueba', 'login@prueba']);
     route::get('/contact', 'indexController@index');
     route::get('/blog/buscar', 'indexController@index');
     route::get('/tienda/producto3/:id', 'indexController@index');
