@@ -33,4 +33,3 @@ route::get('/contact/custom', 'indexController@index');
 route::get('/blog/buscar/id', 'indexController@index');
 route::get('/tienda/producto4/:idproduct/categoria/:cat_id', 'indexController@index', ["login@prueba"]);
 route::post('/tienda/producto', 'indexController@index', ["login@prueba"]);
-route::get('/allan', 'indexController@allan', ["login@prueba"]);

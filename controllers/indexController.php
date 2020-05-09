@@ -21,10 +21,4 @@ class indexController extends view
         view::render("index",$newArr);
         
     }
-    public function allan($var)
-    {
-        $newArr = array($var,"Variable"=>"NewArr");
-        view::render("allan",$newArr);
-        
-    }
 }
