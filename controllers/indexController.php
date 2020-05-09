@@ -2,22 +2,29 @@
 
 namespace controllers;
 // manda a llamar al controlador de vistas
- use Config\view;
+ use config\view;
 // manda a llamar al controlador de conexiones a bases de datos
 
 // la clase debe llamarse igual que el controlador respetando mayusculas
 class indexController extends view
 
 {
-    public function index(...$var)
+    public function index($var)
     {
-        $newArr = array($var,"Variable"=>"NewArr");
-        view::render("index2",$newArr);
+        print_r($var);
+        $var["Variable"] ="NewArr";
+        view::render("index2",$var);
     }
     public function b($var)
     {
         $newArr = array($var,"Variable"=>"NewArr");
         view::render("index",$newArr);
+        
+    }
+    public function allan($var)
+    {
+        $newArr = array($var,"Variable"=>"NewArr");
+        view::render("allan",$newArr);
         
     }
 }

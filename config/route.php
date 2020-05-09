@@ -17,6 +17,8 @@ class route
     {
         if ($_SERVER['REQUEST_METHOD'] == "POST") {
             self::excRoute($ruta, $funcion, $middlewares);
+        } else {
+            // echo "USE POST METHOD FOR CALL THIS URL<br>";
         }
     }
     /**
@@ -53,10 +55,10 @@ class route
         $result = false;
         $url = route::assingUrl($ruta);
         $typeUrl = self::validate_type_url($url['ruta']);
-        //*Validar si la Url es del tipo Get sin parametros
-        if (!$typeUrl) {
+        //*Validar si la Url es del tipo post o un get sin parametros
+        if (!$typeUrl["isVar"]) {
             //!verifico si la url del Get es igual a alguna Ruta Asignada.
-            if ($url['url'] == $url['ruta']) {
+             if ($url['url'] == $url['ruta']) {
                 //TODO: HACER QUE EL RETURN DE LOS MIDDLEWARES DEVUELVAN DATOS EN UN ARRAY
                 //*Verifica si la url se encuntra dentro de un grupo de middleware
                 if ($GLOBALS['middleware_active']) {
@@ -78,7 +80,9 @@ class route
                 }
                 //*Valida que no hubo error y continua con el proceso
                 $GLOBALS["error404"] = true;
-                self::callMethod($funcion, array("post" => $_POST, "get" => $_GET));
+                $methodsData["post"]= $_POST;
+                $methodsData["get"]= $_GET;
+                self::callMethod($funcion,$methodsData);
             }
         } else {
             //*Verifica que la Ruta coinciada con la URL y obtiene sus parametros
@@ -103,7 +107,9 @@ class route
 
                 }
                 $GLOBALS["error404"] = true;
-                $var = array("params" => $hasVar["vars"], "post" => $_POST, "get" => $_GET);
+                $var["params"]= $hasVar["vars"];
+                $var["post"]= $_POST;
+                $var["get"]= $_GET;
                 self::callMethod($funcion, $var);
                 return;
             } else {
@@ -120,6 +126,8 @@ class route
     {
         $ruta = ($GLOBALS['route_group_active'] === true ? rtrim($ruta = $GLOBALS['route_group'] . $ruta, '/') : (strlen($ruta) > 1 ? rtrim($ruta, '/') : $ruta));
         $url = $_SERVER['REQUEST_URI'];
+        $url = explode("?", $url);
+        $url =$url[0];
         $url = (strlen($url) > 1 ? rtrim($url, '/') : $url);
         return ['ruta' => $ruta, 'url' => $url];
     }
@@ -133,7 +141,9 @@ class route
      */
     public static function middleware_exc($Middlewares, $var = [])
     {
-        $method = array("params" => $var, "post" => $_POST, "get" => $_GET);
+        $method["params"]= $var;
+        $method["post"]= $_POST;
+        $method["get"]= $_GET;
         $return = false;
         foreach ($Middlewares as $Middleware) {
             /**Obtener los middlewares y su controlador en array y lo asignamos a una variable */
@@ -219,6 +229,8 @@ class route
         preg_match('/\\/:/', $url, $elementVar);
         if (count($elementVar) > 0) {
             return array("isVar" => true);
+        } else {
+            return array("isVar" => false);
         }
     }
     /**
@@ -236,8 +248,7 @@ class route
         $url = rtrim($url, "/");
         $ruta = ltrim($ruta, "/");
         $ruta = rtrim($ruta, "/");
-        $url = explode("?", $url);
-        $ArrayUrl = explode("/", $url[0]);
+        $ArrayUrl = explode("/", $url);
         $ArrayRuta = explode("/", $ruta);
         if (count($ArrayUrl) == count($ArrayRuta)) {
             $ArrayElements = [];

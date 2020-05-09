@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index2</title>
 </head>
 <body>
-    <h1>Index 2 <?=$Variable?></h1>
+    <h1>Index 2 la variable dice:<?=$Variable?></h1>
+    <h1>Index 2 los parametros dice:</h1>
+    <?php //print_r($params)?>
 </body>
 </html>

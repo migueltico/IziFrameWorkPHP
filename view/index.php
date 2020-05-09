@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Index</title>
 </head>
 <body>
-    <h1>Index  <?=$params["id"]?></h1>
+    <h1>Index PAGE <?=@$params["id"]?></h1>
 </body>
 </html>

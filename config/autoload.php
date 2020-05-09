@@ -6,11 +6,11 @@ class Autoload
     {
         spl_autoload_register(function ($clase) {
             $ruta = str_replace("\\", "/", $clase) . ".php";
-            // print "<br>--------------<br>" . $ruta . "<br>---------------------<br>";
+           // print "<br>--------------<br>" . $ruta . "<br>---------------------<br>";
             if (is_readable($ruta)) {
                 require_once $ruta;
             } else {
-                throw \Exception("Error al cargar la clase : " . $class);
+                throw new \Exception ("Error al cargar la clase :</br> " . $clase."</br>*******************</br>");
             }
         });
     }
